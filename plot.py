@@ -19,6 +19,8 @@ import pandas as pd
 import toolbox
 import os
 
+import html
+
 from path import MyPath2
 
 # HEX code of Antuko colors
@@ -104,11 +106,11 @@ def visualStats(dataframe):
     data = [trace['min'], trace['max'], trace['25%'], trace['75%'], trace['50%'], trace['mean']]
     
     # LAYOUT
-    xaxis = pygo.XAxis()
+    xaxis = pygo.XAxis(tickformat='%b %Y')
     yaxis = pygo.YAxis(ticksuffix='')
-    margin = dict(l=34, r=0, t=3, b=30)
+    margin = dict(l=34, r=0, t=3, b=30, pad=0)
     legend = dict(orientation='v', xanchor='right') #bgcolor='transparent' for transparent background
-    layout = pygo.Layout(xaxis=xaxis, yaxis=yaxis, autosize=True, margin=margin, legend=legend, showlegend=False)
+    layout = pygo.Layout(xaxis=xaxis, yaxis=yaxis, autosize=True, margin=margin, legend=legend, showlegend=False, hovermode='closest')
     # Figure
     fig = pygo.Figure(data=data, layout=layout)
     return fig
@@ -153,7 +155,8 @@ def energyDonut(series, color='#CCCCCC'):
 
     # DATA
     trace = pygo.Pie(labels=labels, values=values,
-                   hoverinfo='percent+value+label', textinfo='percent', 
+                   hoverinfo='percent+value+label', 
+                   textinfo='percent', 
                    textfont=dict(size=10),
                    textposition='outside',
                    marker=dict(colors=colors),
@@ -182,60 +185,75 @@ class plot(object):
         ''' The class uses the path class. '''
         self.path = MyPath2(funds_name, localtime)
 
-    def visualStats(self, dataframe, category=''):
+    def iframe(self, url, **param):
+        ''' Sets the iframe style to display a plot.
+            Otherwise, it hardly works through css styling. '''
+        param.update(dict(width='100%'))
+        return html.Iframe(src=url, seamless='seamless', style=dict(border='0'), 
+                        frameBoder='0', **param)
+
+    def visualStats(self, dataframe, category='', **param):
         '''
-        Returns the url of the statistical figure plot.
+        Returns the html iframe of the statistical figure plot.
         '''
         fig = visualStats(dataframe)
         name = Name(dataframe)
         category_path = self.path._set_figure_category_path(category)
         filename = Filename(category_path, name)
         url = Url(fig, filename)
-        return url
+        iframe = self.iframe(url, **param)
+        return iframe
 
-    def simpleScatter(self, dataframe, category='', colors=[]):
+    def simpleScatter(self, dataframe, category='', colors=[], **param):
         '''
-        Returns the url of the simple scatter figure plot.
+        Returns the html iframe of the simple scatter figure plot.
         '''
         fig = simpleScatter(dataframe, colors)
         name = Name(dataframe)
         category_path = self.path._set_figure_category_path(category)
         filename = Filename(category_path, name)
         url = Url(fig, filename)
-        return url
+        frame = self.iframe(url, **param)
+        return frame
 
-    def energyDonut(self, series, category='', color='#CCCCCC'):
+    def energyDonut(self, series, category='', color='#CCCCCC', **param):
         '''
-         Returns the url of the energy donnut figure plot..
+         Returns the html iframe of the energy donnut figure plot..
         '''
         fig = energyDonut(series, color)
         name = Name(series)
         category_path = self.path._set_figure_category_path(category)
         filename = Filename(category_path, name)
         url = Url(fig, filename)
-        return url
+        iframe = self.iframe(url, **param)
+        return iframe
 
 
+'''
+==========================================================
+'''
+if __name__ == '__main__':
 
+    from report import report
+    import numpy as np
+    from html import *
 
+    data = np.random.randn(20, 100)
+    date_range = pd.date_range('2017-01', freq='MS', periods=20)
+    dataframe = pd.DataFrame(data, index=date_range).cumsum(axis=0).apply(np.log)
+    dataframe.index.name = 'my dataframe'
 
+    Plot = plot()
+    Report = report()
 
+    content = Div([
 
+        H6('Hola la compagnie créole!', className='gs-header gs-section-header padded'),
 
+        Plot.visualStats(dataframe, height='250')
 
+    ], className='row')
 
+    Report.New_Page(content)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    Report.Build()

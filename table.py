@@ -87,7 +87,19 @@ def seriesTable(series):
     table = dashTable(dataframe, headed=False)
     return table
 
+def textTable(series):
+    ''' Sets a text table in which the index are bolded with the corresponding value below. '''
+    html_text_table = ''
+    for index in series.index:
+        subtitle = html.Strong(index)
+        content = html.P(series[index], className="blue-text")
+        html_text_table += subtitle + content
+    return html_text_table
 
+
+'''
+==========================================================
+'''
 if __name__ == '__main__':
     
     index = ['ourson', 'chaton', 'croco']
@@ -101,7 +113,7 @@ if __name__ == '__main__':
     d = {key: ''.join(value) for key, value in data.items()}
     s = pd.Series(d)
 
-    table = seriesTable(s)
+    table = textTable(s)
 
     content = html.Div(table, className='row')
 

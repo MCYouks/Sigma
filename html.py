@@ -117,6 +117,10 @@ def Br(*args, **kwargs):
 def A(*args, **kwargs):
     pass
 
+@tag('p')
+def P(*args, **kwargs):
+    pass
+
 @tag('td')
 def Td(*args, **kwargs):
     pass

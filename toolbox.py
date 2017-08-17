@@ -16,7 +16,7 @@ import math
 #---------------------------------
 # DESCRIBE FRAMES
 #---------------------------------
-def describe_df(df, dropList=['count'], percentiles=[.25,.5,.75]):
+def describe_df(dataframe, dropList=['count'], percentiles=[.25,.5,.75]):
     '''
     Returns the total count, the average, the standard deviation, 
     the min, 25%, 50%, 75% and the max, for each date in the date range.
