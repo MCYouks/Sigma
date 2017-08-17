@@ -185,7 +185,7 @@ def multi_store_dict(dict, directory, modes, category, name, virgin=False):
 
 def multi_store_dict_dict(dict_dict, directory, modes, category, virgin=False):
     ''' 
-    Store a dict of dataframes in an excel file in a mode/category subdirectory.
+    Store a dict of dict of dataframes in an excel file in a mode/category subdirectory.
     
     Parameters:
     -----------
@@ -205,8 +205,15 @@ class excel(object):
     """
     def __init__(self):
         self.path = MyPath2()
+        self.directory = self.path._excel_path
 
-    
+    def multi_store_dict(dict, modes, category, name, virgin=False):
+        ''' Store a dict of dataframes in an excel file in a mode/category subdirectory. '''
+        multi_store_dict(dict, self.directory, modes, category, name, virgin)
+
+    def multi_store_dict_dict(dict_dict, modes, category, virgin=False):
+        ''' Store a dict of dict of dataframes in an excel file in a mode/category subdirectory. '''
+        multi_store_dict_dict(dict_dict, self.directory, modes, category, virgin)
 
 
 
